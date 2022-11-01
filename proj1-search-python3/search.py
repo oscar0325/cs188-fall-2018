@@ -87,16 +87,100 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    from game import Directions
+    exploredNodes = set()
+    fringe = util.Stack()
+
+    if (problem.isGoalState(problem.getStartState())):
+        return Directions.STOP
+    fringe.push([(problem.getStartState(), 'start', 0)])
+    while not fringe.isEmpty():
+        currentPath = fringe.pop()
+        currentState = currentPath[-1][0]
+        if currentState in exploredNodes:
+            continue
+        if problem.isGoalState(currentState):
+            break
+        successors = problem.getSuccessors(currentState)
+        for x in successors:
+            if x[0] not in exploredNodes:
+                nextPath = currentPath[:]
+                nextPath.append(x)
+                fringe.push(nextPath)
+        exploredNodes.add(currentState)
+    return [x[1] for x in currentPath[1:]]
+
+
+
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    from game import Directions
+    exploredNodes = set()
+    fringe = util.Queue()
+
+    if (problem.isGoalState(problem.getStartState())):
+        return Directions.STOP
+    fringe.push([(problem.getStartState(), 'start', 0)])
+    while not fringe.isEmpty():
+        currentPath = fringe.pop()
+        currentState = currentPath[-1][0]
+        if currentState in exploredNodes:
+            continue
+        if problem.isGoalState(currentState):
+            break
+        successors = problem.getSuccessors(currentState)
+        for x in successors:
+            if x[0] not in exploredNodes:
+                nextPath = currentPath[:]
+                nextPath.append(x)
+                fringe.push(nextPath)
+        exploredNodes.add(currentState)
+    return [x[1] for x in currentPath[1:]]
+
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions
+    exploredNodes = set()
+    fringe = util.PriorityQueue()
+
+    if (problem.isGoalState(problem.getStartState())):
+        return Directions.STOP
+    fringe.push([(problem.getStartState(), 'start', 0)], 0)
+    while not fringe.isEmpty():
+        currentPath = fringe.pop()
+        currentState = currentPath[-1][0]
+        if currentState in exploredNodes:
+            continue
+        currentActions = [x[1] for x in currentPath[1:]]
+        if problem.isGoalState(currentState):
+            break
+        currentCost = problem.getCostOfActions(currentActions)
+        successors = problem.getSuccessors(currentState)
+        for x in successors:
+            if x[0] not in exploredNodes:
+                nextPath = currentPath[:]
+                nextPath.append(x)
+                nextCost = currentCost + x[2]
+                fringe.update(nextPath, nextCost)
+        exploredNodes.add(currentState)
+    return currentActions
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -109,6 +193,32 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    from game import Directions
+    exploredNodes = set()
+    fringe = util.PriorityQueue()
+
+    if (problem.isGoalState(problem.getStartState())):
+        return Directions.STOP
+    fringe.push([(problem.getStartState(), 'start', 0)], 0)
+    while not fringe.isEmpty():
+        currentPath = fringe.pop()
+        currentState = currentPath[-1][0]
+        if currentState in exploredNodes:
+            continue
+        currentActions = [x[1] for x in currentPath[1:]]
+        if problem.isGoalState(currentState):
+            break
+        currentCost = problem.getCostOfActions(currentActions)
+        successors = problem.getSuccessors(currentState)
+        for x in successors:
+            if x[0] not in exploredNodes:
+                nextPath = currentPath[:]
+                nextPath.append(x)
+                nextCost = currentCost + x[2] + heuristic(x[0], problem)
+                fringe.update(nextPath, nextCost)
+        exploredNodes.add(currentState)
+    return currentActions
+
     util.raiseNotDefined()
 
 
